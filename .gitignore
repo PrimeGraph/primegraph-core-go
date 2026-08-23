@@ -1,0 +1,22 @@
+# Build output
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Credentials and local environment
+.env
+.env.*
+*.pem
+*.key
+*.json.key
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
