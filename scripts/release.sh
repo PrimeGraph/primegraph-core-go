@@ -1,5 +1,5 @@
 #!/bin/sh
-# Release github.com/PrimeGraph/primegraph-core-go.
+# Release github.com/primegraph/primegraph-core-go.
 #
 # Usage: sh scripts/release.sh <semver>       e.g. sh scripts/release.sh 1.4.0
 #
@@ -9,8 +9,8 @@
 # tag-only. Every check that can fail runs before the tag is created.
 #
 # The module path must never gain a /vN suffix, and this script must never add
-# one. In Go, github.com/PrimeGraph/primegraph-core-go/v2 is a *different*
-# module path from github.com/PrimeGraph/primegraph-core-go, and the toolchain
+# one. In Go, github.com/primegraph/primegraph-core-go/v2 is a *different*
+# module path from github.com/primegraph/primegraph-core-go, and the toolchain
 # will happily link both majors into one binary. That would give a graph two
 # copies of every shared type again — the exact duplicate-nominal-type problem
 # this module exists to remove. Stay on v0/v1 forever and make breaking changes
@@ -95,4 +95,4 @@ git tag -a "$TAG" -m "$TAG"
 git push origin "$TAG"
 
 echo "release: tagged $TAG; consumers pick it up with"
-echo "  go get github.com/PrimeGraph/primegraph-core-go@$TAG"
+echo "  go get github.com/primegraph/primegraph-core-go@$TAG"

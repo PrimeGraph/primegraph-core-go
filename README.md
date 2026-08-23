@@ -1,6 +1,6 @@
 # primegraph-core-go
 
-`github.com/PrimeGraph/primegraph-core-go` — the shared cross-package vocabulary for PrimeGraph
+`github.com/primegraph/primegraph-core-go` — the shared cross-package vocabulary for PrimeGraph
 generated Go packages.
 
 ## Why this module exists
@@ -28,8 +28,8 @@ so the build has something to compile.
 
 ## The module path never gains a `/vN` suffix
 
-`github.com/PrimeGraph/primegraph-core-go/v2` is, to the Go toolchain, a *different module* from
-`github.com/PrimeGraph/primegraph-core-go`. Both can be in one build graph at once, and Go will link
+`github.com/primegraph/primegraph-core-go/v2` is, to the Go toolchain, a *different module* from
+`github.com/primegraph/primegraph-core-go`. Both can be in one build graph at once, and Go will link
 both into the same binary — reintroducing two nominal copies of every shared type, which is exactly
 what this module exists to prevent.
 
@@ -80,4 +80,4 @@ tree, off the default branch, or when the tag already exists, and it does all of
 changes anything. Go records no version in a manifest and there is no registry to publish to, so the
 release is tag-only: it builds, vets, tags and pushes the tag.
 
-Consumers then pin it with `go get github.com/PrimeGraph/primegraph-core-go@v1.4.0`.
+Consumers then pin it with `go get github.com/primegraph/primegraph-core-go@v1.4.0`.

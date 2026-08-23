@@ -1,3 +1,3 @@
-module github.com/PrimeGraph/primegraph-core-go
+module github.com/primegraph/primegraph-core-go
 
 go 1.22
