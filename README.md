@@ -123,3 +123,4 @@ changes anything. Go records no version in a manifest and there is no registry t
 release is tag-only: it builds, vets, tests, tags and pushes the tag.
 
 Consumers then pin it with `go get github.com/primegraph/primegraph-core-go@v1.4.0`.
+
