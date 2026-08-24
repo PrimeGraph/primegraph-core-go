@@ -8,7 +8,10 @@
 // NullableString went undefined across packages and how a validation error
 // stopped matching its own errors.As target.
 //
-// Per-bundle machinery — Firebase, HTTP transport, server helpers, the schema
-// validator, the pure builtin-only helpers — stays inside the generated
-// packages and does not belong here.
+// Per-bundle machinery — Firebase, the HTTP transport itself, server helpers,
+// the schema validator, the pure builtin-only helpers — stays inside the
+// generated packages and does not belong here. The HTTP request and response
+// VALUE types are the exception the split makes obvious: they carry no
+// behaviour and every package repeated them verbatim, so they are declared once
+// here while the Fetch that reads them stays generated.
 package primegraphcore

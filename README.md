@@ -32,6 +32,7 @@ or marshalled in another.
 | `NullableStringOf` `NullableInt64Of` `NullableFloat64Of` `NullableBoolOf` | lift a scalar into that carrier; a package that calls one must resolve the type it returns |
 | `Date` with `MarshalJSON`/`UnmarshalJSON` | the `format: date` carrier, and the inner type of `NullableDate` |
 | `File`, `FormFile`, `TypeOf` | the DSL file value travels between packages as a parameter and a model field |
+| `HttpAuth`, `HttpRequest`, `HttpResponse` | pure declaration with no behaviour, repeated verbatim by every package that emits an HTTP step; the `Fetch` that reads them stays generated, and a generated package aliases these instead of redeclaring them |
 | `DslError[P]`, `NewDslError`, `DslErrorAny`, `DslErrorView[P]`, `DefaultErrorMessage`, `CoerceError`, `CoerceErrorDefault`, `MatchesDslError`, `MatchDslError`, `NewValidationError`, `ValidationMessage` | an error raised in one package is caught in another; `errors.As` matches on type identity, so a second declaration means a `catch` that never fires |
 | `TransportErrorCoercer`, `FirebaseAdminErrorCoercer` | hook variables every package must read the *same* one of; the code that installs them stays in the generated packages, next to the SDK it names |
 
@@ -41,7 +42,7 @@ The package has no third-party dependencies. Everything here builds on the stand
 
 `MappedNullable`, `IsNil`, `NewStrictDecoder`, the `Ptr*` family, `NormalizeUUID*`, the schema and
 validator machinery, the pure helpers whose signatures name only builtins, the HTTP server helpers,
-and everything Firebase. None of them crosses a package boundary, and several would drag a
+the `Fetch` transport itself, and everything Firebase. None of them crosses a package boundary, and several would drag a
 third-party module into every generated Go package.
 
 Two things sit just outside the line and are worth naming:
@@ -79,6 +80,7 @@ doc.go              package documentation
 nullable.go         the nine Nullable* carriers, their constructors and the *Of lifts
 date.go             the calendar-day carrier
 file.go             the file value, its multipart part, and the DSL type name of a value
+http.go             the request and response value types of one outbound HTTP call
 dslerror.go         the DslError family, the coercer hooks and the validation error
 *_test.go           tests, co-located with what they cover
 .githooks/          Conventional Commits hook, dependency-free POSIX shell
