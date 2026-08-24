@@ -1,0 +1,93 @@
+name: CI
+
+# Every generated Go package depends on this module, so a regression here
+# breaks generated output everywhere. This workflow guards main and everything
+# proposed for it.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Read-only on purpose. A release is a tag, and it is pushed deliberately from
+# a developer machine by scripts/release.sh; CI must never tag or publish.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  commit-messages:
+    name: Conventional Commits
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5.1.0
+        with:
+          # The hook is run over every commit the change adds, so the whole
+          # history has to be present to name the range.
+          fetch-depth: 0
+
+      # The rules are not restated here: this runs .githooks/commit-msg, the
+      # same script a developer's clone runs, so a message CI accepts is
+      # exactly a message the local hook would have accepted.
+      - name: Run the repository's commit-msg hook over the new commits
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.sha }}
+        run: |
+          set -eu
+          EMPTY=0000000000000000000000000000000000000000
+          LIST=$(mktemp)
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git rev-list --no-merges "$BASE_SHA".."$HEAD_SHA" > "$LIST"
+          elif [ "$PUSH_BEFORE" != "$EMPTY" ] && git cat-file -e "${PUSH_BEFORE}^{commit}" 2>/dev/null; then
+            git rev-list --no-merges "$PUSH_BEFORE".."$PUSH_AFTER" > "$LIST"
+          else
+            git rev-list --no-merges -1 "$PUSH_AFTER" > "$LIST"
+          fi
+          [ -s "$LIST" ] || echo "no new commits to check"
+          MSG=$(mktemp)
+          STATUS=0
+          while read -r SHA; do
+            git log -1 --format=%B "$SHA" > "$MSG"
+            if sh .githooks/commit-msg "$MSG"; then
+              echo "ok  $(git log -1 --format='%h %s' "$SHA")"
+            else
+              STATUS=1
+            fi
+          done < "$LIST"
+          exit $STATUS
+
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5.1.0
+
+      - uses: actions/setup-go@v6.5.0
+        with:
+          # The version the module declares, read from the manifest itself so
+          # the two can never drift.
+          go-version-file: go.mod
+          # The module has no third-party dependencies and therefore no go.sum,
+          # which is the only thing the module cache would key on.
+          cache: false
+
+      # The four commands the README documents.
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test ./...
+
+      - name: gofmt -l .
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "gofmt would rewrite these files:" >&2
+            echo "$unformatted" >&2
+            exit 1
+          fi
