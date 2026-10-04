@@ -80,7 +80,7 @@ func (v NullableInt) MarshalJSON() ([]byte, error) {
 
 func (v *NullableInt) UnmarshalJSON(src []byte) error {
 	v.isSet = true
-	return json.Unmarshal(src, &v.value)
+	return json.Unmarshal(integralNumber(src), &v.value)
 }
 
 type NullableInt32 struct {
@@ -116,7 +116,7 @@ func (v NullableInt32) MarshalJSON() ([]byte, error) {
 
 func (v *NullableInt32) UnmarshalJSON(src []byte) error {
 	v.isSet = true
-	return json.Unmarshal(src, &v.value)
+	return json.Unmarshal(integralNumber(src), &v.value)
 }
 
 type NullableInt64 struct {
@@ -152,7 +152,7 @@ func (v NullableInt64) MarshalJSON() ([]byte, error) {
 
 func (v *NullableInt64) UnmarshalJSON(src []byte) error {
 	v.isSet = true
-	return json.Unmarshal(src, &v.value)
+	return json.Unmarshal(integralNumber(src), &v.value)
 }
 
 type NullableFloat32 struct {

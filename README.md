@@ -38,6 +38,10 @@ or marshalled in another.
 
 The package has no third-party dependencies. Everything here builds on the standard library alone.
 
+OpenAPI defines `integer` by value, so `NullableInt`, `NullableInt32` and `NullableInt64` decode `1.0`
+and `1e2` as 1 and 100 and keep refusing `1.5`. The value is worked out exactly from the digits of the
+token, never through a `float64`, so every int64 keeps its precision.
+
 ## What does not live here
 
 `MappedNullable`, `IsNil`, `NewStrictDecoder`, the `Ptr*` family, `NormalizeUUID*`, the schema and
@@ -78,6 +82,7 @@ reference each other — and would cost the emitter a symbol-to-package map.
 go.mod              module declaration, no /vN suffix, ever
 doc.go              package documentation
 nullable.go         the nine Nullable* carriers, their constructors and the *Of lifts
+integral.go         the whole-number respelling the nullable integer carriers decode through
 date.go             the calendar-day carrier
 file.go             the file value, its multipart part, and the DSL type name of a value
 http.go             the request and response value types of one outbound HTTP call
